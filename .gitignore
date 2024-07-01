@@ -70,3 +70,6 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+/Assets/Hands_Weapons_Animations_Pack_Update
+/Assets/Models/Scary Zombie Pack/Ch10_nonPBR.fbx
