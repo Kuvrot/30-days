@@ -6,6 +6,7 @@ public class WeaponStats : MonoBehaviour
 {
     [Header("Stats")]
     public int ID = 0;
+    public float health = 100;
     public float Damage = 5f;
     public float ReloadingTime = 1f;
     public float FireRate = 0.15f;  //How much time it takes to fire the gun again.

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
@@ -7,7 +8,8 @@ using UnityEngine.UIElements;
 public class EnemyController : MonoBehaviour
 {
     //State
-    bool attacking;
+    bool attacking = false;
+    bool slowDown = false;
     
     //Movement
     float blend = 0;
@@ -17,6 +19,9 @@ public class EnemyController : MonoBehaviour
     Animator animator;
     NavMeshAgent agent;
     EnemyStats stats;
+    //Rigidbody rigidbody;
+
+    public GameObject[] HitBoxes;
 
     // Start is called before the first frame update
     void Start()
@@ -24,25 +29,35 @@ public class EnemyController : MonoBehaviour
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         stats = GetComponent<EnemyStats>();
+        //rigidbody = GetComponent<Rigidbody>();
         agent.speed = stats.MovementSpeed; 
     }
 
     // Update is called once per frame
     void Update()
     {
-        animator.SetFloat("Blend" , blend);
+        if (stats.Health <= 0)
+        {
+            Instantiate(GameManager.EnemyDeathPrefabs[stats.Type] , transform.position , transform.rotation);
+            Destroy(gameObject);
+        }
+
+        animator.SetFloat("Blend", blend);
 
         distance = Vector3.Distance(transform.position , GameManager.target.position);
         if (distance > agent.stoppingDistance)
         {
-            agent.isStopped = false;
-            agent.SetDestination(GameManager.target.position);
-            blend = 1;
-            attacking = false;
+            if (!slowDown)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(GameManager.target.position);
+                blend = 1;
+                attacking = false;
+            }
         }
         else
         {
-            if (!attacking)
+            if (!attacking && !slowDown)
             {
                 blend = 0;
                 agent.isStopped = true;
@@ -57,6 +72,24 @@ public class EnemyController : MonoBehaviour
     {
         yield return new WaitForSeconds(stats.AttackRate);
         attacking = false;
-        StopAllCoroutines();
+        StopCoroutine(WaitAttack());
     }
+
+    IEnumerator SlowDown()
+    {
+        agent.isStopped = true;
+        yield return new WaitForSeconds(2);
+        agent.isStopped = false;
+        slowDown = false;
+        StopCoroutine(SlowDown());
+    }
+
+    public void GetDamage(float damage)
+    {
+        stats.Health -= damage;
+        animator.SetTrigger("HitReaction");
+        slowDown = true;
+        StartCoroutine(SlowDown());
+    }
+
 }

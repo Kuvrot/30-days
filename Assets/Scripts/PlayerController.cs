@@ -1,11 +1,11 @@
 using System.Collections;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEditor.Search;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    
     public GameObject[] Inventory;
     public int currentWeapon = 0;
 
@@ -56,11 +56,17 @@ public class PlayerController : MonoBehaviour
             aiming = false;
         }
 
+        if (weaponStats.currAmmo <= 0 && canShoot)
+        {
+            canShoot = false;
+            StartCoroutine(WaitReload());
+        }
+
     }
 
     private void FixedUpdate()
     {
-        if (canShoot)
+        if (canShoot && weaponStats.currAmmo > 0)
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
@@ -70,8 +76,7 @@ public class PlayerController : MonoBehaviour
                 yRotation -= 2.5f;
                 Shoot();
                 canShoot = false;
-                StartCoroutine(WaitForWeapon(weaponStats.FireRate));
-                
+                StartCoroutine(WaitForWeapon());       
             }
         }
     }
@@ -87,14 +92,35 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(Camera.main.transform.position , Camera.main.transform.forward , out hit, 100))
         {
+            if (hit.transform.CompareTag("Body"))
+            {
+                hit.transform.GetComponentInParent<EnemyController>().GetDamage(weaponStats.Damage);
+                
+            }
+
+            if (hit.transform.CompareTag("Head"))
+            {
+                hit.transform.GetComponentInParent<EnemyController>().GetDamage(weaponStats.Damage * 2);
+
+            }
             Debug.Log(hit.transform.name);
         }
+        weaponStats.currAmmo--;
     }
 
-    IEnumerator WaitForWeapon (float time)
+    IEnumerator WaitForWeapon ()
     {
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(weaponStats.FireRate);
         canShoot = true;
-        StopAllCoroutines();
+        StopCoroutine(WaitForWeapon());
+    }
+
+    IEnumerator WaitReload()
+    {
+        animator.SetTrigger("Reload");
+        yield return new WaitForSeconds(weaponStats.ReloadingTime);
+        canShoot = true;
+        weaponStats.currAmmo = weaponStats.maxAmmo;
+        StopCoroutine(WaitReload());
     }
 }
