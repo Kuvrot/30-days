@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     //Components
     Animator animator;
     WeaponStats weaponStats;
+    AudioSource audioSource;
 
     float mouseY, mouseX;
 
@@ -85,6 +86,7 @@ public class PlayerController : MonoBehaviour
     {
         animator = Inventory[currentWeapon].GetComponent<Animator>();
         weaponStats = Inventory[currentWeapon].GetComponent<WeaponStats>();
+        audioSource = Inventory[currentWeapon].GetComponent<AudioSource>();
     }
 
     void Shoot ()
@@ -106,6 +108,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log(hit.transform.name);
         }
         weaponStats.currAmmo--;
+        audioSource.PlayOneShot(weaponStats.ShotSound);
     }
 
     IEnumerator WaitForWeapon ()

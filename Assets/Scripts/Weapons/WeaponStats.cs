@@ -23,4 +23,6 @@ public class WeaponStats : MonoBehaviour
 
     public Vector3 NormalPosition;
     public Vector3 AimPosition;
+
+    public AudioClip ShotSound;
 }
