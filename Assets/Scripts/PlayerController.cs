@@ -105,6 +105,9 @@ public class PlayerController : MonoBehaviour
                 hit.transform.GetComponentInParent<EnemyController>().GetDamage(weaponStats.Damage * 2);
 
             }
+
+            Instantiate(GameManager.BulletImpact, hit.point, Quaternion.LookRotation(hit.normal));
+
             Debug.Log(hit.transform.name);
         }
         weaponStats.currAmmo--;
@@ -120,6 +123,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator WaitReload()
     {
+        audioSource.PlayOneShot(weaponStats.ReloadSound);
         animator.SetTrigger("Reload");
         yield return new WaitForSeconds(weaponStats.ReloadingTime);
         canShoot = true;

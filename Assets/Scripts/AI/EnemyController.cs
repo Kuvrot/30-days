@@ -78,7 +78,7 @@ public class EnemyController : MonoBehaviour
     IEnumerator SlowDown()
     {
         agent.isStopped = true;
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
         agent.isStopped = false;
         slowDown = false;
         StopCoroutine(SlowDown());

@@ -14,12 +14,17 @@ public class GameManager : MonoBehaviour
     [Header("Enemies")]
     public GameObject[] _EnemyDeathPrefabs;
     static public GameObject[] EnemyDeathPrefabs;
+
+    [Header("Objects")]
+    public GameObject bulletImpact;
+    static public GameObject BulletImpact;
     
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         target = _target;
         EnemyDeathPrefabs = _EnemyDeathPrefabs;
+        BulletImpact = bulletImpact;
     }
 
     // Update is called once per frame
