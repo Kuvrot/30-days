@@ -69,21 +69,43 @@ public class PlayerController : MonoBehaviour
     {
         if (canShoot && weaponStats.currAmmo > 0)
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (!weaponStats.Automatic)
             {
-                animator.SetTrigger("Fire");
-                weaponStats.muzzleFlash.Play();
-                Camera.main.GetComponent<Animator>().SetTrigger("Fire");
-                yRotation -= 2.5f;
-                Shoot();
-                canShoot = false;
-                StartCoroutine(WaitForWeapon());       
+                if (Input.GetKeyDown(KeyCode.Mouse0))
+                {
+                    animator.SetTrigger("Fire");
+                    weaponStats.muzzleFlash.Play();
+                    Camera.main.GetComponent<Animator>().SetTrigger("Fire");
+                    yRotation -= 2.5f;
+                    Shoot();
+                    canShoot = false;
+                    StartCoroutine(WaitForWeapon());
+                }
+            }
+            else
+            {
+                if (Input.GetKey(KeyCode.Mouse0))
+                {
+                    animator.SetTrigger("Fire");
+                    weaponStats.muzzleFlash.Play();
+                    Camera.main.GetComponent<Animator>().SetTrigger("Fire");
+                    yRotation -= 2.5f;
+                    Shoot();
+                    canShoot = false;
+                    StartCoroutine(WaitForWeapon());
+                }
             }
         }
     }
 
     void WeaponSetup()
     {
+        for (int i = 0; i < Inventory.Length; i++) 
+        {
+            Inventory[i].SetActive(false);
+        }
+
+        Inventory[currentWeapon].SetActive(true);
         animator = Inventory[currentWeapon].GetComponent<Animator>();
         weaponStats = Inventory[currentWeapon].GetComponent<WeaponStats>();
         audioSource = Inventory[currentWeapon].GetComponent<AudioSource>();
